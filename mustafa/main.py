@@ -1,134 +1,110 @@
-"""Soru 1: Görev Yöneticisi Uygulaması
-Proje Açıklaması:
-Bu ödevde, Python programlama dili kullanılarak bir görev yöneticisi uygulaması oluşturulacaktır. Bu uygulama kullanıcıların görev eklemesine, tamamlamasına, silmesine ve listelemesine olanak tanıyacaktır.
-
-Gereksinimler:
-1- Görevler bir Python listesinde saklanacak ve her görev bir sözlük (dictionary) olarak temsil edilecektir. Her görev aşağıdaki özelliklere sahip olmalıdır:
-
-Sıra Numarası (Otomatik olarak atanmalı)
-
-Görev Adı
-
-Durum (Tamamlandı, Bekliyor veya Silindi)
-
-2- Kullanıcının gerçekleştirebileceği işlemler:
-
-Yeni bir görev ekleme
-
-Bir görevi tamamlama
-
-Bir görevi silme
-
-Tamamlanan görevleri listeleme
-
-Tüm görevleri durumlarıyla birlikte listeleme
-
-Çıkış
-
-3- Görevler eklendikleri sıraya göre otomatik olarak bir sıra numarası almalıdır.
-
-4- Silinen görevlerin numaraları yerine yeni görevler eklenebilmelidir.
-
-5- Görevler listelenirken sıra numaralarına göre sıralanmalıdır.
-
-6- Her işlemden sonra kullanıcıya uygun bir geri bildirim verilmelidir. Örneğin, yeni bir görev eklendiğinde kullanıcıya görevin eklendiğine dair bir mesaj gösterilmelidir."""
-
 gorevler = []
 
 def sira_numarasi_al():
-    mevcut_numaralar = {gorev["sira_numarasi"] for gorev in gorevler if gorev["durum"] != "Silindi"}
+    mevcut_numaralar = {gorev['sira_numarasi'] for gorev in gorevler if gorev['durum'] != "Silindi"}
     i = 1
     while True:
         if i not in mevcut_numaralar:
             return i
         i += 1
 
-def gorev_ekle():
-    gorev_adi = input("Görev Adını Giriniz: ")
-    sira_numarasi = sira_numarasi_al() 
-    gorev = {"sira_numarasi": sira_numarasi, "gorev_adi": gorev_adi, "durum": "Bekliyor"}
+def yeni_gorev_ekle():
+    gorev_adi = input("Yeni Görev Adını Giriniz: ")
+    sira_numarasi = sira_numarasi_al()
+    gorev = {"sira_numarasi": sira_numarasi, "gorev_adi": gorev_adi, "durum": "Bekleniyor"}
     gorevler.append(gorev)
-    print(f"Görev Eklendi: [{sira_numarasi}] {gorev_adi}")
+    print(f"Görev Eklendi: {sira_numarasi} - {gorev_adi}")
 
-def gorevi_tamamla():
-    print(butun_gorevler_listesi())
-    try:
-        sira = int(input("Tamamlanacak görevin sıra numarasını girin: "))
-        for gorev in gorevler:
-            if gorev["sira_numarasi"] == sira and gorev["durum"] != "Silindi":
-                gorev["durum"] = "Tamamlandı"
-                print(f"Görev Tamamlandı: [{sira}] {gorev['gorev_adi']}")
-                return
-        print("Görev Bulunamadı.")  
-    except ValueError:
-        print("Geçersiz Giriş.")
-
-def gorev_silme():
-    try:
-        sira = int(input("Silinecek görev sıra numarasını giriniz: "))
-        for gorev in gorevler:
-            if gorev["sira_numarasi"] == sira and gorev["durum"] != "Silindi":
-                gorev["durum"] = "Silindi"
-                print(f"Görev Silindi: [{sira}] {gorev['gorev_adi']}")
-                return
-        print("Görev bulunamadı.")  
-    except ValueError:
-        print("Geçersiz Giriş.")
-
-def tamamlanan_gorev_listesi():
-    print("Tamamlanan Görevler: ")
-    found = False
-    for gorev in sorted(gorevler, key=lambda x: x["sira_numarasi"]):
-        if gorev["durum"] == "Tamamlandı":
-            print(f"{gorev['sira_numarasi']} {gorev['gorev_adi']}")
-            found = True
-    if not found:
-        print("Tamamlanan Görev Yok.")
-
-def butun_gorevler_listesi():
+def butun_listeyi_goruntule():
     print("Bütün Görevler: ")
     found = False
     for gorev in sorted(gorevler, key=lambda x: x["sira_numarasi"]):
         if gorev["durum"] != "Silindi":
-            print(f"{gorev['sira_numarasi']} {gorev['gorev_adi']} - {gorev['durum']}")
+            print(f"{gorev['sira_numarasi']} - {gorev['gorev_adi']} - {gorev['durum']}")
             found = True
     if not found:
         print("Listelenecek Görev Yok.")
 
+def tamamlanan_gorevleri_listele():
+    print("Tamamlanan Görevler:")
+    found = False
+    for gorev in sorted(gorevler, key=lambda x: x["sira_numarasi"]):
+        if gorev["durum"] == "Tamamlandı":
+            print(f"{gorev['sira_numarasi']} - {gorev['gorev_adi']}")
+            found = True
+    if not found:
+        print("Tamamlanan Görev Yok.")
+
+def gorevi_tamamla():
+    aktif_gorevler = [g for g in gorevler if g["durum"] != "Silindi"]
+    if not aktif_gorevler:
+        print("Tamamlanacak görev yok.")
+        return
+    print("Seçim Yapabilmeniz İçin Bütün Liste Getiriliyor.")
+    butun_listeyi_goruntule()
+    try:
+        sira = int(input("Tamamlanacak Görevin Sıra Numarasını Giriniz: "))
+        for gorev in gorevler:
+            if gorev["sira_numarasi"] == sira and gorev["durum"] != "Silindi":
+                gorev["durum"] = "Tamamlandı"
+                print(f"Görev Tamamlandı: {gorev['sira_numarasi']} - {gorev['gorev_adi']}")
+                return
+        print("Görev Bulunamadı.")
+    except ValueError:
+        print("Geçersiz Giriş Yaptınız.")
+
+def gorevi_sil():
+    aktif_gorevler = [g for g in gorevler if g["durum"] != "Silindi"]
+    if not aktif_gorevler:
+        print("Silinecek görev yok.")
+        return
+    print("Seçim Yapabilmeniz İçin Bütün Liste Getiriliyor.")
+    butun_listeyi_goruntule()
+    try:
+        sira = int(input("Silenecek Görevin Sıra Numarasını Giriniz: "))
+        for gorev in gorevler:
+            if gorev["sira_numarasi"] == sira and gorev["durum"] != "Silindi":
+                gorev["durum"] = "Silindi"
+                print(f"Görev Silindi: {gorev['sira_numarasi']} - {gorev['gorev_adi']}")
+                return
+        print("Görev bulunamadı.") 
+    except ValueError:
+        print("Geçersiz Giriş Yaptınız.")
+
 def menu():
-    print("1. Yeni görev ekle")
-    print("2. Görevi tamamla")
-    print("3. Görevi sil")
-    print("4. Tamamlanan görevleri listele")
-    print("5. Tüm görevleri listele")
+    print("")
+    print("1. Yeni Görev Ekle")
+    print("2. Bütün Listeyi Görüntüle")
+    print("3. Tamamlanan GÖrevleri Listele")
+    print("4. Görevi Tamamla")
+    print("5. Görevi Sil")
     print("6. Çıkış")
 
 def calistir():
-    menu()  
+    menu()
+    
     while True:
-        secim = input("\nSeçiminizi yapın (1-6): ")
-        
+        secim = input("\n1-6 Arasında Seçim Yapınız:\n...")
         if secim == "1":
-            gorev_ekle()
+            yeni_gorev_ekle()
         elif secim == "2":
-            gorevi_tamamla()
+            butun_listeyi_goruntule()
         elif secim == "3":
-            gorev_silme()
+            tamamlanan_gorevleri_listele()
         elif secim == "4":
-            tamamlanan_gorev_listesi()
+            gorevi_tamamla()
         elif secim == "5":
-            butun_gorevler_listesi()
+            gorevi_sil()
         elif secim == "6":
-            print("Çıkış yapılıyor...")
+            print("Çıkış Yapılıyor...")
             break
         else:
-            print("Geçersiz seçim. Lütfen 1-6 arasında bir sayı girin.")
-        
-        menu()  
+            print("Geçersiz Seçim.")
 
-if __name__ == "__main__":
-    calistir() 
+        menu()
 
+if __name__=="__main__":
+    calistir()
 
 
 
