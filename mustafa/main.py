@@ -105,7 +105,7 @@ def calistir():
 
 if __name__=="__main__":
     calistir()
-#push larama öğrenme
+#push larama öğrenmedd
 
 
 
